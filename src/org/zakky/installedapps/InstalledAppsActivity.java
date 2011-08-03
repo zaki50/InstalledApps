@@ -34,6 +34,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.SimpleAdapter;
 import android.widget.SimpleAdapter.ViewBinder;
@@ -91,6 +93,29 @@ public final class InstalledAppsActivity extends ListActivity {
             }
         });
         setListAdapter(adapter);
+
+        getListView().setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final Object itemObj = parent.getItemAtPosition(position);
+                if (!(itemObj instanceof Map<?, ?>)) {
+                    return;
+                }
+                final Map<?, ?> item = (Map<?, ?>) itemObj;
+                final Object pkgNameObj = item.get(Keys.PACKAGE_NAME);
+                final Object clsNameObj = item.get(Keys.CLASS_NAME);
+                if (!(pkgNameObj instanceof String && clsNameObj instanceof String)) {
+                    return;
+                }
+
+                final Intent intent = new Intent(InstalledAppsActivity.this,
+                        AppDetailsActivity.class);
+                intent.putExtra(AppDetailsActivity.EXTRA_PACKAGE_NAME, (String) pkgNameObj);
+                intent.putExtra(AppDetailsActivity.EXTRA_CLASS_NAME, (String) clsNameObj);
+                
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -135,8 +160,10 @@ public final class InstalledAppsActivity extends ListActivity {
      */
     private static final class Keys {
         public static final String RESOLVE_INFO = "resolveInfo";
+
         public static final String PACKAGE_NAME = "package";
-        public static final String ACTIVITY = "activity";
+
+        public static final String CLASS_NAME = "class";
 
         public static final String LABEL = "label";
 
@@ -152,7 +179,7 @@ public final class InstalledAppsActivity extends ListActivity {
             infoMap.put(Keys.RESOLVE_INFO, info);
 
             infoMap.put(Keys.PACKAGE_NAME, info.activityInfo.packageName);
-            infoMap.put(Keys.ACTIVITY, info.activityInfo.name);
+            infoMap.put(Keys.CLASS_NAME, info.activityInfo.name);
         }
         return result;
     }
