@@ -17,6 +17,7 @@
 package org.zakky.installedapps;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,18 +25,15 @@ import java.util.Map;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.content.pm.ServiceInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
-/**
- *
- */
 public final class AppDetailsActivity extends ListActivity {
 
     public static final String EXTRA_PACKAGE_NAME = "package";
@@ -89,46 +87,59 @@ public final class AppDetailsActivity extends ListActivity {
                 }, new int[] {
                     android.R.id.text1
                 }));
-
         return true;
     }
 
     private List<Map<String, Object>> createData(ResolveInfo info) {
         final List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
 
-        Map<String, Object> d1 = new HashMap<String, Object>();
-        d1.put(KEY, "hoge");
-        data.add(d1);
-
-        Map<String, Object> d2 = new HashMap<String, Object>();
-        d2.put(KEY, "fuga");
-        data.add(d2);
-
-        Map<String, Object> d3 = new HashMap<String, Object>();
-        d3.put(KEY, "buroro");
-        data.add(d3);
-
-        Map<String, Object> d4 = new HashMap<String, Object>();
-        d4.put(KEY, "buroro");
-        data.add(d4);
-
-        Map<String, Object> d5 = new HashMap<String, Object>();
-        d5.put(KEY, "buroro");
-        data.add(d5);
+        addLine(data, "priority", "" + info.priority);
+        addLine(data, "nonLocalizedLabel", info.nonLocalizedLabel);
 
         final ActivityInfo activityInfo = info.activityInfo;
-        boolean isDefault = info.isDefault;
-        int labelRes = info.labelRes;
-        int match = info.match;
-        CharSequence nonLocalizedLabel = info.nonLocalizedLabel;
-        int preferredOrder = info.preferredOrder;
-        int priority = info.priority;
-        // API level 5
-        //String resolvePackageName = info.resolvePackageName;
-        ServiceInfo serviceInfo = info.serviceInfo;
-        int specificIndex = info.specificIndex;
+        addLine(data, "act_permission", activityInfo.permission);
+        addLine(data, "act_processName", activityInfo.processName);
+        addLine(data, "act_targetActivity", activityInfo.targetActivity);
+        addLine(data, "act_taskAffinity", activityInfo.taskAffinity);
+        addLine(data, "act_configChanges", "0x" + Integer.toHexString(activityInfo.configChanges));
+        addLine(data, "act_enabled", Boolean.toString(activityInfo.enabled));
+        addLine(data, "act_exported", Boolean.toString(activityInfo.exported));
+        addLine(data, "act_flags", "0x" + Integer.toHexString(activityInfo.flags));
+        addLine(data, "act_launchMode", "0x" + Integer.toHexString(activityInfo.launchMode));
+        addLine(data, "act_nonLocalizedLabel", activityInfo.nonLocalizedLabel);
+        addLine(data, "act_screenOrientation",
+                "0x" + Integer.toHexString(activityInfo.screenOrientation));
+        addLine(data, "act_softInputMode", "0x" + Integer.toHexString(activityInfo.softInputMode));
+        addLine(data, "act_theme", "" + activityInfo.theme);
+
+        final ApplicationInfo applicationInfo = activityInfo.applicationInfo;
+        addLine(data, "act_app_name", applicationInfo.name);
+        addLine(data, "act_app_nonLocalizedLabel", applicationInfo.nonLocalizedLabel);
+        addLine(data, "act_app_packageName", applicationInfo.packageName);
+        addLine(data, "act_app_className", applicationInfo.className);
+        addLine(data, "act_app_dataDir", applicationInfo.dataDir);
+        addLine(data, "act_app_manageSpaceActivityName", applicationInfo.manageSpaceActivityName);
+        addLine(data, "act_app_permission", applicationInfo.permission);
+        addLine(data, "act_app_processName", applicationInfo.processName);
+        addLine(data, "act_app_publicSourceDir", applicationInfo.publicSourceDir);
+        addLine(data, "act_app_sourceDir", applicationInfo.sourceDir);
+        addLine(data, "act_app_taskAffinity", applicationInfo.taskAffinity);
+        addLine(data, "act_app_enabled", Boolean.toString(applicationInfo.enabled));
+        addLine(data, "act_app_flags", "0x" + Integer.toHexString(applicationInfo.flags));
+        addLine(data, "act_app_sharedLibraryFiles",
+                Arrays.toString(applicationInfo.sharedLibraryFiles));
+        addLine(data, "act_app_targetSdkVersion", "" + applicationInfo.targetSdkVersion);
+        addLine(data, "act_app_theme", "" + applicationInfo.theme);
+        addLine(data, "act_app_uid", "" + applicationInfo.uid);
 
         return data;
+    }
+
+    private void addLine(List<Map<String, Object>> data, String header, CharSequence value) {
+        final Map<String, Object> m = new HashMap<String, Object>();
+        final String line = header + ": " + value;
+        m.put(KEY, line);
+        data.add(m);
     }
 
     private ResolveInfo getResolveInfo(String packageName, String className) {
