@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_apps_installed">No applications installed!</string>
+    <string name="app_name">InstalledApps</string>
+    <string name="refresh">Refresh</string>
+</resources>
